@@ -26,42 +26,19 @@ def format_input(filename):
 def main():
     numbers, operations, lengths = format_input('day_6/input.txt')
 
-    lines_segmented = []
-
-    for line in numbers:
-        idx = 0
-        lines_segmented.append([])
-        for length in lengths:
-            segment = line[idx:idx + length]
-            lines_segmented[-1].append(segment)
-            idx += length + 1
-        else:
-            segment = line[idx:]
-            lines_segmented[-1].append(segment)
-
-    lines_segmented = np.array(lines_segmented).T
-
-    matrix_cleaned = []
-
-    print(len(lines_segmented), len(operations), len(lengths))
-
-    for numbers, operation, length in zip(lines_segmented, operations, lengths):
-
-        operands = []
-
-        for i in range(length):
-            digits = [num[i] for num in numbers]
-            operands.append(''.join(digits))
-
-        operands = np.array(operands).astype(np.int64)
-
-        matrix_cleaned.append((operation, operands))
-
-    print(matrix_cleaned)
-
+    start_indices = [0] + np.cumsum([l + 1 for l in lengths]).tolist()
     res = 0
 
-    for op, operands in matrix_cleaned:
+    for i, (op, length) in enumerate(zip(operations, lengths)):
+        start = start_indices[i]
+
+        operands_str = []
+        for col in range(length):
+            column_chars = "".join(line[start + col] for line in numbers)
+            operands_str.append(column_chars)
+
+        operands = np.array(operands_str, dtype=np.int64)
+
         if op == "+":
             res += np.sum(operands)
         elif op == "*":
