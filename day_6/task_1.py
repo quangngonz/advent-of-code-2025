@@ -8,26 +8,19 @@ def format_input(filename):
         operations = input_data.pop().split()
         numbers = [line.split() for line in input_data]
 
-        return np.array(numbers, dtype='int64'), operations
+        return np.array(numbers, dtype='int64'), np.array(operations)
 
 
 def main():
     numbers, operations = format_input('day_6/input.txt')
 
-    sum_matrix = np.sum(numbers, axis=0)
-    multiplication_matrix = np.prod(numbers, axis=0)
+    addition_mask = operations == "+"
+    add_no = np.sum(np.sum(numbers[:, addition_mask]))
 
-    total = 0
+    multiplication_mask = operations == "*"
+    mult_no = np.sum(np.prod(numbers[:, multiplication_mask], axis=0))
 
-    for idx, op in enumerate(operations):
-        if op == "+":
-            total += sum_matrix[idx]
-        elif op == "*":
-            total += multiplication_matrix[idx]
-        else:
-            print("Error", op)
-
-    print(total)
+    print(add_no + mult_no)
 
 
 if __name__ == "__main__":
